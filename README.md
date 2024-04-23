@@ -27,6 +27,9 @@
 - `python main.py`
 - Navigate to [(http://127.0.0.1:8080)]
 
+  ### Video of Working
+  ![](https://youtu.be/I4Pb1_JGbpE)<br>
+
 #### Home:
 
 ![](https://i.ibb.co/0MPPh0h/Home.png)<br>
