@@ -28,26 +28,26 @@
 - Navigate to [(http://127.0.0.1:8080)]
 
 #### Home:
-##### Dropdown Search
+
 ![](https://i.ibb.co/0MPPh0h/Home.png)<br>
 
 #### Q2:
-##### Dropdown Search
+
 ![](https://i.ibb.co/p0tq2TK/Question2.png)<br>
 
 #### Q3:
-##### Dropdown Search
+
 ![](https://i.ibb.co/W396j8V/Question3.png)<br>
 
 #### Q4:
-##### Dropdown Search
+
 ![](https://i.ibb.co/LSPfjCF/Question4.png)<br>
 
 
 #### Q5:
-##### Dropdown Search
+
 ![](https://i.ibb.co/Rgwyryd/Question5.png)<br>
 
-#### Q2:
-##### Dropdown Search
+#### Q6:
+
 ![](https://i.ibb.co/KN29nms/Question6.png)<br>
