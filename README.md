@@ -51,3 +51,7 @@
 #### Q6:
 
 ![](https://i.ibb.co/KN29nms/Question6.png)<br>
+
+
+
+## The readme part is inspired from Jaskirat Singh Maskeen (23110146)
