@@ -28,7 +28,7 @@
 - Navigate to [(http://127.0.0.1:8080)]
 
   ### Video of Working
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/I4Pb1_JGbpE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)<br>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/I4Pb1_JGbpE/0.jpg)](https://www.youtube.com/watch?v=I4Pb1_JGbpE)<br>
 
 #### Home:
 
