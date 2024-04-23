@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Companywise distribution of donation for a political party</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+
+    <!-- <style>
+        body {
+            background-color: #c2c2c9;
+            color: rgb(0, 0, 0);
+        }
+        #bondsTable th,
+        #bondsTable td {
+            color: rgb(175, 169, 169);
+        }
+    </style> -->
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4">Companywise distribution of donation for a political party</h1>
+        
+        <div class="form-group">
+            <label for="partySelect">Select Political Party:</label>
+            <input list="pur" id="partySelect" class="form-control"></input>
+            <datalist id="pur">
+                {% for i in parties %}
+                <option value="{{ i }}">
+                {% endfor %}
+            </datalist>
+        </div>
+
+        <button class="btn btn-primary mb-4" onclick="getBondData()">Get Bond Data</button>
+
+        <table id="example" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Number of Bonds</th>
+                    <th>Bond Values (in Cr)</th>
+                    <th>Name of Company</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <canvas id="bondsChart" style="display: none;"></canvas>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#example').DataTable({
+                pageLength: 10
+            });
+        });
+
+        function getBondData() {
+            const selectedParty = document.getElementById('partySelect').value;
+            fetch('/party_bonds_data4', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ party_name: selectedParty })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    alert('Error fetching data. Please try again later.');
+                } else {
+                    const table = $('#example').DataTable();
+                    table.clear().draw();
+                    data.forEach(item => {
+                        table.row.add([
+                            item[2],
+                            `₹ ${item[1]} Cr`,
+                            item[0]
+                        ]).draw();
+                    });
+                    document.getElementById('bondsChart').style.display = 'block';
+                    createPieChart(data);
+                }
+            });
+        }
+
+        function createPieChart(data) {
+            const years = data.map(item => item[2]);
+            const amounts = data.map(item => item[1]);
+            const part = data.map(item => item[0]);
+            const totalAmount = data.reduce((acc, entry) => acc + parseFloat(entry[1]), 1);
+
+            const ctx = document.getElementById('bondsChart').getContext('2d');
+            if (window.bondsChart instanceof Chart) {
+                window.bondsChart.destroy();
+            }
+            window.bondsChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: part,
+                    datasets: [{
+                        label: 'Bond Values (in Cr)',
+                        data: amounts,
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.8)', 
+                            'rgba(40, 167, 69, 0.8)', 
+                            'rgba(0, 123, 255, 0.8)', 
+                            'rgba(255, 193, 7, 0.8)', 
+                            'rgba(108, 117, 125, 0.8)', 
+                            'rgba(173, 20, 87, 0.8)' 
+                        ],
+                        borderColor: [
+                            'white', 
+                            'white', 
+                            'white', 
+                            'white', 
+                            'white', 
+                            'white' 
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        caption: {
+                            text: `Total amount is ₹ ${totalAmount} Cr`,
+                            display: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

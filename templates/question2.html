@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly Bond Purchases</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+    background-color:#3a3a41;
+    color: white;
+    #bondsTable th,
+    #bondsTable td {
+        color: rgb(175, 169, 169);
+        }}
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="mb-4">Yearly Bond Purchases by Company/Individual</h1>
+        
+        <div class="form-group">
+            <label for="purchaserSelect">Select Company/Individual:</label>
+            <input list="pur" id="purchaserSelect" class="form-control"></input>
+            <datalist id="pur">
+                {% for i in purchasers %}
+                <option value="{{ i }}">
+                {% endfor %}
+            </datalist>
+        </div>
+
+        <button class="btn btn-primary mb-4" onclick="getBondData()">Get Bond Data</button>
+
+        <table id="bondsTable" style="display: none;" class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Bond Values (in Cr)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <!-- <button class="btn btn-primary mb-4" onclick="getBondData()">Get Bond Data</button> -->
+
+        <canvas id="bondsChart"></canvas>
+        
+    </div>
+
+    <script>
+
+    function getBondData() {
+        const selectedPurchaser = document.getElementById('purchaserSelect').value;
+        fetch('/purchaser_bonds_data', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ purchaser_name: selectedPurchaser })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                alert('Error fetching data. Please try again later.');
+            } else {
+                const tableBody = document.querySelector('#bondsTable tbody');
+                    if (data.length !=0){
+                        document.getElementById('bondsTable').style.display = 'table';
+                    }
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item[0]}</td>
+                        <td>₹ ${item[1]} Cr</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                createChart(data);
+            }
+        });
+    }
+
+        function createChart(data) {
+        const years = data.map(item => item[0]);
+        const amounts = data.map(item => item[1]);
+        const bondCount = data.length; 
+        const totalAmount = data.reduce((acc, entry) => acc + parseFloat(entry[1]), 1);
+
+        const ctx = document.getElementById('bondsChart').getContext('2d');
+        if (window.bondsChart instanceof Chart) {
+            window.bondsChart.destroy();
+        }
+        window.bondsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: years,
+                datasets: [{
+                    label: 'Number of Bonds',
+                    data: amounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)', 
+                    borderColor: 'white', 
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        title: {
+                        display: true,
+                        text: 'Bond Values (in Cr)' 
+                    },
+                        beginAtZero: true,
+                        ticks: {
+                            color: 'white' 
+                        }
+                    },
+                    x: {
+                        title: {
+                        display: true,
+                        text: 'Years' 
+                    },
+                        ticks: {
+                            color: 'white' 
+                        }
+                    }
+                },
+                indexAxis: 'x',
+                plugins: {caption: {
+                    text: `Total amount is ₹ ${totalAmount} Cr` ,
+                    display: true
+                }
+                },belowGraph: {
+                    text: 'Additional text below the graph', 
+                    display: true
+                }
+
+            }
+        });
+    }
+
+
+    </script>
+</body>
+</html>
